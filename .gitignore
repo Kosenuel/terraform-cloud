@@ -1,0 +1,13 @@
+# Ignore all .log files
+*.log
+
+# Ignore the .terraform directories
+.terraform/*
+backend/.terraform/*
+backend/*.tfstate
+
+# Ignore all .hcl file
+*.hcl
+
+# Ignore all .tfstate file
+*.tfstate
