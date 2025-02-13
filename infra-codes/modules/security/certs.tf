@@ -27,7 +27,7 @@ resource "aws_acm_certificate" "project_cert" {
 # Create a public hosted zone
 resource "aws_route53_zone" "project_zone" {
     name = var.domain_name
-    comment = "Public hosted zone managed by Terraform"
+    comment = "Public hosted zone managed by Terraform - Kosenuel"
 }
 
 # Create the DNS record for the ACM certificate
@@ -63,8 +63,8 @@ resource "aws_route53_record" "tooling" {
     type    = "A"
 
     alias {
-        name                    = aws_lb.ext-alb.dns_name
-        zone_id                 = aws_lb.ext-alb.zone_id
+        name                    = var.ext-alb-dns_name
+        zone_id                 = var.ext-alb-zone_id 
         evaluate_target_health  = true
     }
 }
@@ -76,8 +76,8 @@ resource "aws_route53_record" "wordpress" {
     type    = "A"
 
     alias {
-        name                    = aws_lb.ext-alb.dns_name
-        zone_id                 = aws_lb.ext-alb.zone_id
+        name                    = var.ext-alb-dns_name
+        zone_id                 = var.ext-alb-zone_id 
         evaluate_target_health  = true
     }
 }

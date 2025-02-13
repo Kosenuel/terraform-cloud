@@ -1,3 +1,5 @@
+
+
 # Prepare Wordpress user data
 locals {
   wordpress_userdata = templatefile("${path.module}/scripts/wordpress.sh", {
@@ -7,10 +9,9 @@ locals {
     WORDPRESS_DIR = "/var/www/html/"
     WP_CONFIG     ="/var/www/html/wp-config.php"
     domain_name   = var.domain_name
-    EFS_ID        = aws_efs_file_system.project-efs.id
-    ACCESS_POINT  = aws_efs_access_point.wordpress.id
-    access_point  = aws_efs_access_point.wordpress.id
-    RDS_ENDPOINT  = replace(aws_db_instance.project-rds.endpoint, ":3306", "")
+    EFS_ID        = var.efs_id
+    ACCESS_POINT  = var.wordpress_ap
+    RDS_ENDPOINT  = replace(var.rds_endpoint, ":3306", "")
     DB_USER       = var.db_user
     DB_PASSWORD   = var.db_password
     RDS_USER      = var.rds_user
@@ -20,14 +21,14 @@ locals {
 
 # Create Wordpress Launch Template
 resource "aws_launch_template" "wordpress-launch-template" {
-    name                  = "wordpress-launch-template"
-    image_id              = var.ami_id
-    instance_type         = var.instance_type
-    vpc_security_group_ids  = [aws_security_group.webserver-sg.id]
-    key_name              = var.key_name
+    name                    = "wordpress-launch-template"
+    image_id                = lookup(var.images, var.region, "ami-0aa938b5c246ef111")
+    instance_type           = var.instance_type
+    vpc_security_group_ids  = [var.webserver-sg_id]
+    key_name                = var.key_name
 
     iam_instance_profile {
-        name = aws_iam_instance_profile.ip.name
+        name = var.iam-instance-profile_name
     }
 
     placement {
@@ -56,13 +57,13 @@ locals {
     tooling_userdata = templatefile("${path.module}/scripts/tooling.sh",
     {
         domain_name  = var.domain_name
-        DB_HOST      = replace(aws_db_instance.project-rds.endpoint, ":3306", "")
+        DB_HOST      = replace(var.rds_endpoint, ":3306", "")
         DB_USER      = var.rds_user
         DB_PASS      = var.rds_password
         APP_DB_USER  = var.db_user
         APP_DB_PASS  = var.db_password
-        EFS_ID      = aws_efs_file_system.project-efs.id
-        ACCESS_POINT = aws_efs_access_point.tooling.id
+        EFS_ID       = var.efs_id
+        ACCESS_POINT = var.tooling_ap
         LOG_FILE="/var/log/userdata.log"
         TMP_MYSQL_CNF="/tmp/.mysqlcnf"
         WEB_ROOT="/var/www/html"
@@ -76,13 +77,13 @@ locals {
 # Create Tooling Launch Template
 resource "aws_launch_template" "tooling-launch-template" {
     name                    = "tooling-launch-template"
-    image_id                = var.ami_id
+    image_id                = lookup(var.images, var.region, "ami-0aa938b5c246ef111")
     instance_type           = var.instance_type
-    vpc_security_group_ids  = [aws_security_group.webserver-sg.id]
+    vpc_security_group_ids  = [var.webserver-sg_id]
     key_name                = var.key_name
 
     iam_instance_profile {
-        name = aws_iam_instance_profile.ip.name 
+        name = var.iam-instance-profile_name
     }
 
     placement {
@@ -111,7 +112,7 @@ resource "aws_launch_template" "tooling-launch-template" {
 locals {
     nginx_userdata = templatefile("${path.module}/scripts/nginx.sh", 
     {
-        internal_alb_dns_name  = aws_lb.int-alb.dns_name
+        internal_alb_dns_name  = var.int-alb-dns_name
     }
     )
 }
@@ -119,13 +120,13 @@ locals {
 # Create Nginx Launch Template
 resource "aws_launch_template" "nginx-launch-template" {
     name                    = "nginx-launch-template"
-    image_id                = var.ami_id
+    image_id                = lookup(var.images, var.region, "ami-0aa938b5c246ef111")
     instance_type           = var.instance_type
-    vpc_security_group_ids  = [aws_security_group.webserver-sg.id]
+    vpc_security_group_ids  = [var.webserver-sg_id]
     key_name                = var.key_name
 
     iam_instance_profile {
-        name = aws_iam_instance_profile.ip.name
+        name = var.iam-instance-profile_name
     }
 
     placement {
@@ -143,7 +144,7 @@ resource "aws_launch_template" "nginx-launch-template" {
             {
                 Name = "nginx-launch-template"
             }
-        )
+        )   
     }
 
     user_data = base64encode(local.nginx_userdata)

@@ -3,8 +3,8 @@ resource "aws_lb" "ext-alb" {
     name               = "ext-alb"
     internal           = false
     load_balancer_type = "application"
-    security_groups    = [aws_security_group.ext-alb-sg.id]
-    subnets            = [for subnet in aws_subnet.public : subnet.id]
+    security_groups    = [var.ext-alb-sg_id]
+    subnets            = [for subnet in var.public_subnets : subnet.id]
 
     tags = merge(
         var.tags,
@@ -20,13 +20,13 @@ resource "aws_lb_listener" "ext-alb-listener" {
     port                = 443
     protocol            = "HTTPS"
     ssl_policy          = "ELBSecurityPolicy-2016-08"
-    certificate_arn     = aws_acm_certificate.project_cert.arn
+    certificate_arn     = var.cert_arn
 
     default_action {
         type             = "forward"
         target_group_arn = aws_lb_target_group.nginx-tgt.arn
     }
-    depends_on            = [aws_acm_certificate.project_cert]
+    # depends_on            = [module.security]
 }
 
 
@@ -35,11 +35,11 @@ resource "aws_lb" "int-alb" {
     name                 = "int-alb"
     internal             = true
     load_balancer_type   = "application"
-    security_groups      = [aws_security_group.int-alb-sg.id]
+    security_groups      = [var.int-alb-sg_id]
     subnets              = [
-        aws_subnet.private[0].id,
-        aws_subnet.private[1].id,
-        aws_subnet.private[2].id
+        var.private_subnets[0].id,
+        var.private_subnets[1].id,
+        var.private_subnets[2].id
     ]
 
     tags = merge(
@@ -56,7 +56,7 @@ resource "aws_lb_listener" "int-alb-listener" {
     port                = 443
     protocol            = "HTTPS"
     ssl_policy          = "ELBSecurityPolicy-2016-08"
-    certificate_arn     = aws_acm_certificate.project_cert.arn
+    certificate_arn     = var.cert_arn
 
     default_action {
         type             = "forward"

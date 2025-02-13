@@ -1,3 +1,8 @@
+# Get list of availability zones in the region
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
 # Create SNS topic for all auto scaling groups
 resource "aws_sns_topic" "project-sns" {
     name = "Default_CloudWatch_Alarms_Topic"
@@ -33,12 +38,12 @@ resource "aws_autoscaling_group" "wordpress-asg" {
     health_check_grace_period = 915
     health_check_type   = "ELB"
     vpc_zone_identifier = [
-        aws_subnet.private[1].id, 
-        aws_subnet.private[2].id,
-        aws_subnet.private[3].id,
-        aws_subnet.private[0].id
+        var.private_subnets[1].id, 
+        var.private_subnets[2].id,
+        var.private_subnets[3].id,
+        var.private_subnets[0].id
         ]
-    target_group_arns   = [aws_lb_target_group.wordpress-tgt.arn]
+    target_group_arns   = [var.wordpress-tgt_arn]
 
     launch_template {
         id             = aws_launch_template.wordpress-launch-template.id
@@ -62,12 +67,12 @@ resource "aws_autoscaling_group" "nginx-asg" {
     health_check_grace_period = 300
     health_check_type   = "ELB"
     vpc_zone_identifier = [
-        aws_subnet.private[1].id, 
-        aws_subnet.private[2].id,
-        aws_subnet.private[3].id,
-        aws_subnet.private[0].id
+        var.private_subnets[1].id, 
+        var.private_subnets[2].id,
+        var.private_subnets[3].id,
+        var.private_subnets[0].id
         ]
-    target_group_arns   = [aws_lb_target_group.nginx-tgt.arn]
+    target_group_arns   = [var.nginx-tgt_arn]
 
     launch_template {
         id             = aws_launch_template.nginx-launch-template.id
@@ -91,12 +96,12 @@ resource "aws_autoscaling_group" "tooling-asg" {
     health_check_grace_period = 915
     health_check_type   = "ELB"
     vpc_zone_identifier = [
-        aws_subnet.private[1].id, 
-        aws_subnet.private[2].id,
-        aws_subnet.private[3].id,
-        aws_subnet.private[0].id
+        var.private_subnets[1].id, 
+        var.private_subnets[2].id,
+        var.private_subnets[3].id,
+        var.private_subnets[0].id
         ]
-    target_group_arns   = [aws_lb_target_group.tooling-tgt.arn]
+    target_group_arns   = [var.tooling-tgt_arn]
 
     launch_template {
         id              = aws_launch_template.tooling-launch-template.id

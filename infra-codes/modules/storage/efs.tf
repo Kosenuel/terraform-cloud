@@ -1,7 +1,7 @@
 # Create EFS File System
 resource "aws_efs_file_system" "project-efs" {
     encrypted    = true
-    kms_key_id   = aws_kms_key.project-kms.arn
+    kms_key_id   = var.kms-key_arn
 
     tags = merge(
         var.tags,
@@ -14,17 +14,17 @@ resource "aws_efs_file_system" "project-efs" {
 # Create Mount Targets in Private Subnets
 resource "aws_efs_mount_target" "private-1" {
     file_system_id  = aws_efs_file_system.project-efs.id
-    subnet_id       = aws_subnet.private[0].id
-    security_groups = [aws_security_group.datalayer-sg.id]
+    subnet_id       = var.private_subnets[0].id
+    security_groups = [var.datalayer-sg_id]
 }
 
 resource "aws_efs_mount_target" "private-2" {
     file_system_id  = aws_efs_file_system.project-efs.id
-    subnet_id       = aws_subnet.private[1].id
-    security_groups = [aws_security_group.datalayer-sg.id]
+    subnet_id       = var.private_subnets[1].id
+    security_groups = [var.datalayer-sg_id]
 }
 
-# Create Access Points for the EFS
+# Create Access Point - wordpress
 resource "aws_efs_access_point" "wordpress" {
     file_system_id  = aws_efs_file_system.project-efs.id
 
@@ -50,6 +50,7 @@ resource "aws_efs_access_point" "wordpress" {
     )
 }
 
+# Create Access Point - tooling
 resource "aws_efs_access_point" "tooling" {
     file_system_id  = aws_efs_file_system.project-efs.id
 

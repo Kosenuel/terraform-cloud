@@ -3,15 +3,15 @@ resource "aws_lb_target_group" "nginx-tgt" {
     name                = "nginx-tgt"
     port                = 80
     protocol            = "HTTP"
-    vpc_id              = aws_vpc.main.id
+    vpc_id              = var.vpc_id
     target_type         = "instance"
 
     health_check {
-        interval        = 10
-        path            = "/healthz"
-        healthy_threshold = 2
-        unhealthy_threshold = 7
-        timeout         = 5
+        interval             = 10
+        path                 = "/healthz"
+        healthy_threshold    = 2
+        unhealthy_threshold  = 3
+        timeout              = 5
     }
 
     tags = merge(
@@ -27,15 +27,15 @@ resource "aws_lb_target_group" "wordpress-tgt" {
     name                = "wordpress-tgt"
     port                = 80
     protocol            = "HTTP"
-    vpc_id              = aws_vpc.main.id
+    vpc_id              = var.vpc_id
     target_type         = "instance"
 
     health_check {
-        interval        = 10
-        path            = "/healthz"
-        healthy_threshold = 2
-        unhealthy_threshold = 7
-        timeout         = 5
+        interval            = 10
+        path                = "/healthz"
+        healthy_threshold   = 2
+        unhealthy_threshold = 3
+        timeout             = 5
     }
 
     tags = merge(
@@ -51,15 +51,15 @@ resource "aws_lb_target_group" "tooling-tgt" {
     name                = "tooling-tgt"
     port                = 80
     protocol            = "HTTP"
-    vpc_id              = aws_vpc.main.id
+    vpc_id              = var.vpc_id
     target_type         = "instance"
 
     health_check {
-        interval        = 10
-        path            = "/healthz"
-        healthy_threshold = 2
+        interval            = 10
+        path                = "/healthz"
+        healthy_threshold   = 2
         unhealthy_threshold = 7
-        timeout         = 5
+        timeout             = 5
     }
 
     tags = merge(

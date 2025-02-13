@@ -1,6 +1,6 @@
 # Create Elastic IP for NAT Gateway
 resource "aws_eip" "nat_eip" {
-  vpc = true
+  # vpc = true
   tags = merge(
     var.tags,
     {

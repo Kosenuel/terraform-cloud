@@ -1,24 +1,44 @@
 variable "region" {
-  default = "eu-west-2"
+    description = "AWS region"
+    type        = string
+    default     = "eu-west-2"
 }
 
 variable "vpc_cidr" {
-  default = "172.16.0.0/16"
+  description = "Cidr block for the VPC"
+  default     = "172.16.0.0/16"
 }
 
 variable "enable_dns_support" {
-  default = "true"
+  description = "Enable DNS support in the VPC"
+  default     = "true"
 }
 
 variable "enable_dns_hostnames" {
-  default = "true"
+  description = "Enable DNS hostnames in the VPC"
+  default     = "true"
 }
 
 variable "preferred_number_of_public_subnets" {
-  default = null
+  description = "Preferred number of public subnets"
+  default     = null
 }
 variable "preferred_number_of_private_subnets" {
-  default = null
+  description = "Preferred number of private subnets"
+  default     = null
+}
+
+variable "sg_rules" {
+  description = "Map of security group rules"
+  type = map(list(object({
+    description              = string
+    from_port                = number
+    to_port                  = number
+    protocol                 = string
+    cidr_blocks              = optional(list(string))
+    source_security_group_id = optional(string)
+  })))
+  default = {}
 }
 
 variable "tags" {
@@ -42,7 +62,7 @@ variable "ami_id" {
   type        = string
 }
 
-variable "instance_type"{
+variable "instance_type" {
   description = "The instance type to use for the EC2 instances"
   type        = string
 }
@@ -53,7 +73,7 @@ variable "key_name" {
 }
 
 variable "db_user" {
-  description = "The username for the database"
+  description = "The DB user"
   type        = string
 }
 
@@ -71,3 +91,4 @@ variable "rds_password" {
   description = "The password for the RDS instance"
   type        = string
 }
+

@@ -7,33 +7,20 @@ resource "aws_kms_key" "project-kms" {
 # Security group for external ALB
 resource "aws_security_group" "ext-alb-sg"{
     name            = "ext-alb-sg"
-    vpc_id          = aws_vpc.main.id
+    vpc_id          = var.vpc_id
     description     = "Allow HTTP/HTTPS/SSH inbound traffic"
-
-    ingress {
-        description = "HTTP from the internet"
-        from_port   = 80
-        to_port     = 80
-        protocol    = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+    
+    dynamic "ingress" {
+        for_each = var.sg_rules["ext-alb-sg"]
+        content {
+            description = ingress.value.description
+            from_port   = ingress.value.from_port
+            to_port     = ingress.value.to_port
+            protocol    = ingress.value.protocol
+            cidr_blocks = ingress.value.cidr_blocks
+        }
     }
-
-    ingress {
-        description = "HTTPS from the internet"
-        from_port   = 443
-        to_port     = 443
-        protocol    = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-
-    ingress {
-        description = "SSH from the internet"
-        from_port   = 22
-        to_port     = 22
-        protocol    = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-
+    
     egress {
         description = "Allow all traffic"
         from_port   = 0
@@ -52,28 +39,21 @@ resource "aws_security_group" "ext-alb-sg"{
 }
 
 # Security group for Bastion Host
-
 resource "aws_security_group" "bastion-sg"{
     name            = "bastion-sg"
-    vpc_id          = aws_vpc.main.id
-    description     = "Security group for Bastion Host Secure Shell (SSH) access"
+    vpc_id          = var.vpc_id
+    description     = "Security group for Bastion Host"
 
-    ingress {
-        description = "Allow SSH from the internet"
-        from_port   = 22
-        to_port     = 22
-        protocol    = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+    dynamic "ingress" {
+        for_each = var.sg_rules["bastion-sg"]
+        content {
+            description = ingress.value.description
+            from_port   = ingress.value.from_port
+            to_port     = ingress.value.to_port
+            protocol    = ingress.value.protocol
+            cidr_blocks = ingress.value.cidr_blocks
+        }
     }
-
-    ingress {
-        description = "Allow HTTP traffic from the internet"
-        from_port   = 80
-        to_port     = 80
-        protocol    = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-
 
     egress {
         description = "Allow all traffic"
@@ -95,7 +75,7 @@ resource "aws_security_group" "bastion-sg"{
 # Security group for Nginx EC2 instances
 resource "aws_security_group" "nginx-sg"{
     name            = "nginx-sg"
-    vpc_id          = aws_vpc.main.id
+    vpc_id          = var.vpc_id
 
     egress {
         description = "Allow all traffic"
@@ -135,7 +115,7 @@ resource "aws_security_group_rule" "inbound-bastion-ssh" {
 # Security group for Internal ALB 
 resource "aws_security_group" "int-alb-sg"{
     name              = "int-alb-sg"
-    vpc_id            = aws_vpc.main.id
+    vpc_id            = var.vpc_id
 
     egress {
         from_port     = 0
@@ -154,6 +134,7 @@ resource "aws_security_group" "int-alb-sg"{
 
 # Security group rules for Internal ALB
 resource "aws_security_group_rule" "inbound-ialb-https"{
+    description        = "Allow HTTPS traffic from nginx security group"
     type               = "ingress"
     from_port          = 443
     to_port            = 443
@@ -162,10 +143,20 @@ resource "aws_security_group_rule" "inbound-ialb-https"{
     security_group_id  = aws_security_group.int-alb-sg.id
 }
 
+resource "aws_security_group_rule" "inbound-ialb-http"{
+    description        = "Allow  traffic from nginx security group"
+    type               = "ingress"
+    from_port          = 80
+    to_port            = 80
+    protocol           = "tcp"
+    source_security_group_id = aws_security_group.nginx-sg.id # Allow traffic from Nginx security group 
+    security_group_id  = aws_security_group.int-alb-sg.id
+}
+
 # Security group for Webserver EC2 instances
 resource "aws_security_group" "webserver-sg"{
     name               = "webserver-sg"
-    vpc_id             = aws_vpc.main.id
+    vpc_id             = var.vpc_id
 
     egress {
         description    = "Allow all traffic"
@@ -198,7 +189,7 @@ resource "aws_security_group_rule" "inbound-web-http" {
 }
 
 resource "aws_security_group_rule" "inbound-web-http-intAlb" {
-    description        = "Allow HTTP traffic from bastion Security group for testing purposes" 
+    description        = "Allow HTTP traffic from Internal application load balancer Security group" 
     type               = "ingress"
     from_port          = 80
     to_port            = 80
@@ -220,7 +211,7 @@ resource "aws_security_group_rule" "inbound-web-ssh" {
 # Security group for Data Layer
 resource "aws_security_group" "datalayer-sg" {
     name                = "datalayer-sg"
-    vpc_id              = aws_vpc.main.id
+    vpc_id              = var.vpc_id
 
     egress {
         from_port       = 0
@@ -237,7 +228,7 @@ resource "aws_security_group" "datalayer-sg" {
     )
 }
 
-# Security group rules for Data Layer
+# Security Group Rules for Data Layer Security Group
 resource "aws_security_group_rule" "inbound-nfs-port" {
     description          = "Allow NFS traffic from Webserver" 
     type                 = "ingress"

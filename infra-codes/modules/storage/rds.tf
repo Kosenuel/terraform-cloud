@@ -2,7 +2,7 @@
 resource "aws_db_subnet_group" "project-rds" {
     name         = "project-rds"
     description  = "Project RDS Subnet Group"
-    subnet_ids   = [aws_subnet.private[0].id, aws_subnet.private[1].id]
+    subnet_ids   = [var.private_subnets[0].id, var.private_subnets[1].id]
 
     tags = merge(
         var.tags,
@@ -27,7 +27,7 @@ resource "aws_db_instance" "project-rds" {
     db_subnet_group_name   = aws_db_subnet_group.project-rds.name
     skip_final_snapshot    = true
     multi_az               = false
-    vpc_security_group_ids = [aws_security_group.datalayer-sg.id]
+    vpc_security_group_ids = [var.datalayer-sg_id]
 
     tags = merge(
         var.tags,
