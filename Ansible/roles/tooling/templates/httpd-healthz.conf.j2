@@ -1,0 +1,14 @@
+<VirtualHost *:80>
+    DocumentRoot {{ web_root }}
+
+    # Health check endpoint
+    Alias "/healthz" "{{ web_root }}/healthz"
+    <Directory "{{ web_root }}/healthz">
+        Options None
+        AllowOverride None
+        Require all granted
+    </Directory>
+
+    ErrorLog /var/log/httpd/healthz_error.log
+    CustomLog /var/log/httpd/healthz_access.log
+</VirtualHost>

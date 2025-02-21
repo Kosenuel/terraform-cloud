@@ -4,6 +4,10 @@ resource "aws_kms_key" "project-kms" {
     key_usage       = "ENCRYPT_DECRYPT"
 }
 
+##############################################
+#              SECURITY GROUPS               #
+##############################################
+
 # Security group for external ALB
 resource "aws_security_group" "ext-alb-sg"{
     name            = "ext-alb-sg"
@@ -93,25 +97,6 @@ resource "aws_security_group" "nginx-sg"{
     )
 }
 
-# Security group rules for Nginx EC2 instances
-resource "aws_security_group_rule" "inbound-nginx-https" {
-    type              = "ingress"
-    from_port         = 443
-    to_port           = 443
-    protocol          = "tcp"
-    source_security_group_id = aws_security_group.ext-alb-sg.id # Allow traffic from external ALB security group
-    security_group_id = aws_security_group.nginx-sg.id
-}
-
-resource "aws_security_group_rule" "inbound-bastion-ssh" {
-    type              = "ingress"
-    from_port         = 22
-    to_port           = 22
-    protocol          = "tcp"
-    source_security_group_id = aws_security_group.bastion-sg.id # Allow traffic from Bastion Host security group 
-    security_group_id = aws_security_group.nginx-sg.id
-}
-
 # Security group for Internal ALB 
 resource "aws_security_group" "int-alb-sg"{
     name              = "int-alb-sg"
@@ -130,6 +115,115 @@ resource "aws_security_group" "int-alb-sg"{
             Name = "int-alb-sg"
         }
     )
+}
+
+# Security group for Webserver EC2 instances
+resource "aws_security_group" "webserver-sg"{
+    name               = "webserver-sg"
+    vpc_id             = var.vpc_id
+
+    egress {
+        description    = "Allow all traffic"
+        from_port      = 0
+        to_port        = 0
+        protocol       = "-1"
+        cidr_blocks    = ["0.0.0.0/0"]
+    }
+}
+
+# Security group for Data Layer
+resource "aws_security_group" "datalayer-sg" {
+    name                = "datalayer-sg"
+    vpc_id              = var.vpc_id
+
+    egress {
+        from_port       = 0
+        to_port         = 0
+        protocol        = "-1"
+        cidr_blocks     = ["0.0.0.0/0"]
+    }
+
+    tags = merge(
+        var.tags,
+        {
+            Name        = "datalayer-sg"
+        }
+    )
+}
+
+# Security group for other compute resources
+resource "aws_security_group" "compute-sg" {
+    name = "compute-sg"
+    vpc_id = var.vpc_id
+
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    tags = merge(
+        var.tags,
+        {
+            Name = "compute-sg"
+        }
+    )
+}
+
+
+
+##############################################
+#          SECURITY GROUP RULES              #
+##############################################
+# Security group rules for other Compute resources
+resource "aws_security_group_rule" "inbound-bastion-ssh-compute" {
+    description = "Allow Bastion Server to connect to other Compute resources via ssh"
+    type = "ingress"
+    from_port = 22
+    to_port = 22
+    protocol = "tcp"
+    source_security_group_id = aws_security_group.bastion-sg.id
+    security_group_id = aws_security_group.compute-sg.id
+}
+
+resource "aws_security_group_rule" "inbound-artifactory-comms-compute" {
+    description = "Allow Clients from the internet to access compute resources via artifactory port"
+    type = "ingress"
+    from_port = 8081
+    to_port = 8081
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    security_group_id = aws_security_group.compute-sg.id
+}
+
+resource "aws_security_group_rule" "inbound-jenkins-comms-compute" {
+    description = "Allow Clients from the internet communicate with compute resources via the Jenkins default port"
+    type = "ingress"
+    from_port = 8080
+    to_port = 8080
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    security_group_id = aws_security_group.compute-sg.id
+}
+
+# Security group rules for Nginx EC2 instances
+resource "aws_security_group_rule" "inbound-nginx-https" {
+    type              = "ingress"
+    from_port         = 443
+    to_port           = 443
+    protocol          = "tcp"
+    source_security_group_id = aws_security_group.ext-alb-sg.id # Allow traffic from external ALB security group
+    security_group_id = aws_security_group.nginx-sg.id
+}
+
+resource "aws_security_group_rule" "inbound-bastion-ssh" {
+    type              = "ingress"
+    from_port         = 22
+    to_port           = 22
+    protocol          = "tcp"
+    source_security_group_id = aws_security_group.bastion-sg.id # Allow traffic from Bastion Host security group 
+    security_group_id = aws_security_group.nginx-sg.id
 }
 
 # Security group rules for Internal ALB
@@ -151,20 +245,6 @@ resource "aws_security_group_rule" "inbound-ialb-http"{
     protocol           = "tcp"
     source_security_group_id = aws_security_group.nginx-sg.id # Allow traffic from Nginx security group 
     security_group_id  = aws_security_group.int-alb-sg.id
-}
-
-# Security group for Webserver EC2 instances
-resource "aws_security_group" "webserver-sg"{
-    name               = "webserver-sg"
-    vpc_id             = var.vpc_id
-
-    egress {
-        description    = "Allow all traffic"
-        from_port      = 0
-        to_port        = 0
-        protocol       = "-1"
-        cidr_blocks    = ["0.0.0.0/0"]
-    }
 }
 
 # Security group rules for Webserver EC2 instances
@@ -206,26 +286,6 @@ resource "aws_security_group_rule" "inbound-web-ssh" {
     protocol           = "tcp"
     source_security_group_id = aws_security_group.bastion-sg.id # Allow traffic from Bastion Host security group
     security_group_id  = aws_security_group.webserver-sg.id
-}
-
-# Security group for Data Layer
-resource "aws_security_group" "datalayer-sg" {
-    name                = "datalayer-sg"
-    vpc_id              = var.vpc_id
-
-    egress {
-        from_port       = 0
-        to_port         = 0
-        protocol        = "-1"
-        cidr_blocks     = ["0.0.0.0/0"]
-    }
-
-    tags = merge(
-        var.tags,
-        {
-            Name        = "datalayer-sg"
-        }
-    )
 }
 
 # Security Group Rules for Data Layer Security Group

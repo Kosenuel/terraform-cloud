@@ -47,7 +47,12 @@ module "storage" {
 module "compute" {
   source                    = "./modules/compute"
   tags                      = var.tags
-  region                    = var.region
+  ami-web                   = var.ami-web
+  ami-bastion               = var.ami-bastion
+  ami-nginx                 = var.ami-nginx
+  ami-sonar                 = var.ami-sonar
+  ami-jenkins               = var.ami-bastion
+  ami-jfrog                 = var.ami-bastion
   instance_type             = var.instance_type
   key_name                  = var.key_name
   domain_name               = var.domain_name
@@ -60,8 +65,10 @@ module "compute" {
   tooling-tgt_arn           = module.load_balancers.tooling-tgt_arn
   public_subnets            = module.networking.public_subnets
   private_subnets           = module.networking.private_subnets
+  compute-subnet            = module.networking.public_subnets[0].id
   bastion-sg_id             = module.security.bastion-sg_id
   webserver-sg_id           = module.security.webserver-sg_id
+  compute-sg_id             = module.security.compute-sg_id
   efs_id                    = module.storage.efs_id
   wordpress_ap              = module.storage.wordpress_ap
   tooling_ap                = module.storage.tooling_ap

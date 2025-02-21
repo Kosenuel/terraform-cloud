@@ -1,0 +1,48 @@
+---
+# System and package configuration
+update_packages: true
+extra_packages:
+  - git
+  - make
+  - rpm-build
+  - cargo
+  - openssl-devel
+  - rust
+
+  # Amazon EFS configuration
+efs_id: "EFS-ID"
+wordpress_ap_id: "WORDPRESS-AP-ID"
+efs_mount: "/var/www"
+
+# Apache & Php configuration
+httpd_packages:
+  - httpd
+  - mod_ssl
+php_packages: 
+  - php
+  - php-mysqlnd
+  - php-fpm
+  - php-json
+  - php-mbstring
+  - php-xml
+  - php-opcache
+  - php-intl
+  - php-curl
+  - php-zip
+
+# WordPress configuration
+wordpress_download_url: "http://wordpress.org/latest.tar.gz"
+wordpress_dir: "/var/www/html"
+wp_config: "/var/www/html/wp-config.php"
+
+# Databse configuration
+rds_endpoint: "RDS-ENDPPOINT"
+db_admin_user: "admin"
+db_admin_pass: "devopsacts"
+db_name: "wordpressdb"
+db_user: "wpuser"
+db_password: "devopsacts"
+
+# Logging & temporary files
+log_file: "/var/log/wordpress_userdata.log"
+tmp_mysql_cnf: "/tmp/mysql.cnf"

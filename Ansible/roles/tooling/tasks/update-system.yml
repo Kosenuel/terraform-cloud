@@ -1,0 +1,20 @@
+---
+- name: Update system packages
+  ansible.builtin.yum:
+    name: '*'
+    state: latest
+  become: yes
+
+- name: Install extra system dependencies
+  ansible.builtin.yum:
+    - git
+    - mysql
+    - make
+    - rpm-build
+    - cargo
+    - openssl-devel
+    - rust
+    - wget
+    - policycoreutils-python-utils
+  state: present
+  become: yes

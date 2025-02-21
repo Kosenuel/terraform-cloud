@@ -1,0 +1,18 @@
+# Amazon EFS configuration
+efs_id: EFS-ID
+tooling_ap_id: TOOLING-AP-ID
+efs_mount: "/var/www"
+
+# Tooling configuration
+repo_url: https://github.com/Kosenuel/tooling.git
+repo_clone_path: "/home/ec2-user/tooling"
+web_root: "var/www/html"
+
+# Database configuration
+db_host: RDS-ENDPOINT
+db_admin_user: "admin"
+db_admin_pass: "devopsacts"
+app_db_name: "toolingdb"
+app_db_user: "kosenuel"
+app_db_pass: "devopsacts"
+

@@ -1,0 +1,41 @@
+---
+- name: Install amazon-efs-utils if not installed
+  block:
+    - name: Clone efs-utils repository
+      git:
+        repo: 'https://github.com/aws/efs-utils'
+        dest: /tmp/efs-utils
+      become: yes
+    - name: Build the amazon-efs-utils rpm
+      command: make rpm
+      args:
+        chdir: /tmp/efs-utils
+      become: yes
+    - name: Install amazon-efs-utils rpm
+      ansible.builtin.yum:
+        name: "/tmp/efs-utils/build/amazon-efs-utils*rpm"
+        state: present
+      become: yes
+  when: ansible_facts.package['amazon-efs-utils'] is not defined
+
+- name: Ensure that the EFS mount directory exists
+  ansible.builtin.file:
+    path: "{{ efs_mount }}"
+    state: directory
+  become: yes
+
+- name: Mount EFS sharepoint if not already mounted
+  ansible.builtin.mount:
+    path: "{{ efs_mount }}"
+    src: "{{ efs_id }}:/"
+    fstype: efs
+    opts: "nosuid,noexec,defaults,tls,accesspoint={{ wordpress_ap_id }}"
+    state: mounted
+  become: yes
+
+- name: Ensure that the EFS mount persists in fstab
+  lineinfile:
+    path: /etc/fstab
+    line: "{{ efs_id }}:/ {{ efs_mount }} efs _netdev,tls,accesspoint={{ wordpress_ap_id }} 0 0"
+    state: present
+  become: yes

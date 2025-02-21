@@ -1,7 +1,7 @@
 variable "region" {
-    description = "AWS region"
-    type        = string
-    default     = "eu-west-2"
+  description = "AWS region"
+  type        = string
+  default     = "eu-west-2"
 }
 
 variable "vpc_cidr" {
@@ -59,6 +59,26 @@ variable "domain_name" {
 
 variable "ami_id" {
   description = "The AMI ID to use for the EC2 instances"
+  type        = string
+}
+
+variable "ami-web" {
+  description = "The AMI ID to use for the Web EC2 instances"
+  type        = string
+}
+
+variable "ami-bastion" {
+  description = "The AMI ID to use for the Bastion EC2 instances"
+  type        = string
+}
+
+variable "ami-nginx" {
+  description = "The AMI ID to use for the Nginx EC2 instances"
+  type        = string
+}
+
+variable "ami-sonar" {
+  description = "The AMI ID to use for the Sonar EC2 instances"
   type        = string
 }
 

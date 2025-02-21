@@ -2,6 +2,10 @@ output "iam-instance-profile_name" {
     value = aws_iam_instance_profile.ip.name
 }
 
+output "compute-sg_id" {
+    value = aws_security_group.compute-sg.id
+}
+
 output "ext-alb-sg_id" {
     value = aws_security_group.ext-alb-sg.id
 }

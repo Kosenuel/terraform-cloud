@@ -3,20 +3,50 @@ variable "tags" {
     type        = map(string)
 }
 
-variable "region" {
-    description = "AWS Region"
+# variable "region" {
+#     description = "AWS Region"
+#     type        = string
+#     default     = "us-west-2"
+# }
+
+variable "ami-web" {
+    description = "Amazon Machine Image for provisioning the Web Servers (wordpress and tooling)"
     type        = string
-    default     = "us-west-2"
 }
 
-variable "images" {
-    description = "Map of region to AMI IDs"
-    type        = map (string)
-    default = {
-        "eu-west-1" = "ami-009f51225716cb42f"
-        "eu-west-2" = "ami-0aa938b5c246ef111"
-    }
+variable "ami-nginx" {
+    description = "Amazon Machine Image for provisioning the Nginx Server"
+    type        = string
 }
+
+variable "ami-bastion" {
+    description = "Amazon Machine Image for provisioning the Bastion Server"
+    type        = string
+}
+
+variable "ami-jenkins" {
+    description = "Amazon Machine Image for provisioning the Jenkins server"
+    type        = string
+}
+
+variable "ami-jfrog" {
+    description = "Amazon Machine Image for provisioning the Artifactory server"
+    type        = string
+}
+
+variable "ami-sonar" {
+    description = "Amazon Machine Image for provisioning the SonarQube server"
+    type        = string
+}
+
+# variable "images" {
+#     description = "Map of region to AMI IDs"
+#     type        = map (string)
+#     default = {
+#         "eu-west-1" = "ami-009f51225716cb42f" #CentOs
+#         "eu-west-2" = "ami-0aa938b5c246ef111" #CentOs
+#     }
+# }
 
 variable "instance_type" {
     description = "The type of instance to create"
@@ -69,6 +99,11 @@ variable "tooling-tgt_arn" {
     type        = string
 }
 
+variable "compute-subnet" {
+    type = string
+    description = "This is the Subnet for the Compute Resources"
+}
+
 variable "public_subnets" {
     description = "A list of public subnets"
     type        = list(object({
@@ -81,6 +116,11 @@ variable "private_subnets" {
     type        = list(object({
         id = string
     }))
+}
+
+variable "compute-sg_id" {
+    description = "This is the ID for the compute security group"
+    type    = string
 }
 
 variable "bastion-sg_id" {
