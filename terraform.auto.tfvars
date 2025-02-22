@@ -12,9 +12,9 @@ tags = {
 }
 domain_name   = "kosenuel.com"
 ami_id        = "ami-0aa938b5c246ef111" # CentOs Stream 9
-ami-web       = "ami-0710f4567ee24f542" # Custom RHEL 9 Produced using Packer for tooling and bastion
+ami-web       = "ami-04d0ecc597ed198a9" # Custom RHEL 9 Produced using Packer for tooling and bastion
 ami-bastion   = "ami-06014721e290106aa" # Custom RHEL 9 Produced using Packer for bastion
-ami-nginx     = "ami-04bb6eaff8f937282" # Custom RHEL 9 Produced using Packer for nginx
+ami-nginx     = "ami-07199c290cd277630" # Custom RHEL 9 Produced using Packer for nginx
 ami-sonar     = "ami-0f9535ac605dc21d5" # RHEL 9 
 key_name      = "Bukasiation's-SSH-Key"
 instance_type = "t3.small"
