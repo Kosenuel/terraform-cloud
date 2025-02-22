@@ -104,6 +104,9 @@ packer build bastion.pkr.hcl -var-file=variables.pkrvar.hcl
 packer build ubuntu.pkr.hcl -var-file=variables.pkrvar.hcl
 ```
 
+> **Note:** If you would like to build them one by one, you must understand that this setup was created with the intention of building all at once, and as such, to enable you build individually, you would need to copy the variables content from the `variables.pkr.hcl` file and paste it somewhere in the content of the `.pkr.hcl` file you are trying to build so that it can run successfully.
+> After you are done, kindly remove the variables you just introduced to the packer file.
+
 ### Build Options
 - **Override Variables**:
   ```bash
@@ -113,6 +116,12 @@ packer build ubuntu.pkr.hcl -var-file=variables.pkrvar.hcl
   ```bash
   PACKER_LOG=1 packer build web.pkr.hcl
   ```
+OR
+```
+export PACKER_LOG=1
+export PACKER_LOG_PATH=packer-debug.log
+```
+
 
 ---
 

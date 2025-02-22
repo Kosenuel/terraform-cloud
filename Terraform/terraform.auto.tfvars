@@ -12,10 +12,10 @@ tags = {
 }
 domain_name   = "kosenuel.com"
 ami_id        = "ami-0aa938b5c246ef111" # CentOs Stream 9
-ami-web       = "ami-0aa938b5c246ef111" # CentOs Stream 9
-ami-bastion   = "ami-091f18e98bc129c4e" # Ubuntu 24.04 LTS
-ami-nginx     = "ami-03a725ae7d906005d" # Amazon Linux 2023
-ami-sonar     = "ami-0f9535ac605dc21d5" # RHEL 9
+ami-web       = "ami-078f66d24e245b6d0" # Custom RHEL 9 Produced using Packer
+ami-bastion   = "ami-0a8af1b95feca830d" # Custom RHEL 9 Produced using Packer
+ami-nginx     = "ami-06ddde4ee20326fcd" # Custom RHEL 9 Produced using Packer
+ami-sonar     = "ami-0f9535ac605dc21d5" # RHEL 9 
 key_name      = "Bukasiation's-SSH-Key"
 instance_type = "t3.small"
 db_user       = "kosenuel"
