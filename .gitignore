@@ -2,9 +2,9 @@
 *.log
 
 # Ignore the .terraform directories
-Terraform/.terraform/*
-Terraform/backend/.terraform/*
-Terraform/backend/*.tfstate
+.terraform/*
+backend/.terraform/*
+backend/*.tfstate
 
 # Ignore all .tfstate files
 *.tfstate
