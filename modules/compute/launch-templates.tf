@@ -120,7 +120,7 @@ resource "aws_launch_template" "nginx-launch-template" {
     name                    = "nginx-launch-template"
     image_id                = var.ami-nginx
     instance_type           = var.instance_type
-    vpc_security_group_ids  = [var.webserver-sg_id]
+    vpc_security_group_ids  = [var.nginx-sg_id]
     key_name                = var.key_name
 
     iam_instance_profile {

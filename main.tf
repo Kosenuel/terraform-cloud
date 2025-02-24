@@ -68,6 +68,7 @@ module "compute" {
   compute-subnet            = module.networking.public_subnets[0].id
   bastion-sg_id             = module.security.bastion-sg_id
   webserver-sg_id           = module.security.webserver-sg_id
+  nginx-sg_id               = module.security.nginx-sg_id
   compute-sg_id             = module.security.compute-sg_id
   efs_id                    = module.storage.efs_id
   wordpress_ap              = module.storage.wordpress_ap

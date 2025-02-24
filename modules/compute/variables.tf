@@ -133,6 +133,11 @@ variable "webserver-sg_id" {
     type        = string
 }
 
+variable "nginx-sg_id" {
+    description = "ID for the webserver security group"
+    type        = string
+}
+
 variable "efs_id" {
     description = "EFS ID for mounting access points"
     type        = string

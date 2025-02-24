@@ -209,15 +209,27 @@ resource "aws_security_group_rule" "inbound-jenkins-comms-compute" {
 
 # Security group rules for Nginx EC2 instances
 resource "aws_security_group_rule" "inbound-nginx-https" {
+    description       = "Allow Https traffic from external Alb security group"
     type              = "ingress"
     from_port         = 443
     to_port           = 443
     protocol          = "tcp"
-    source_security_group_id = aws_security_group.ext-alb-sg.id # Allow traffic from external ALB security group
+    source_security_group_id = aws_security_group.ext-alb-sg.id # Allow Https traffic from external ALB security group
+    security_group_id = aws_security_group.nginx-sg.id
+}
+
+resource "aws_security_group_rule" "inbound-nginx-http" {
+    description       = "Allow Http traffic from external Alb security group"
+    type              = "ingress"
+    from_port         = 80
+    to_port           = 80
+    protocol          = "tcp"
+    source_security_group_id = aws_security_group.ext-alb-sg.id # Allow Http traffic from external ALB security group
     security_group_id = aws_security_group.nginx-sg.id
 }
 
 resource "aws_security_group_rule" "inbound-bastion-ssh" {
+    description       = "Allow SSH traffic from Bastion Host"
     type              = "ingress"
     from_port         = 22
     to_port           = 22
@@ -238,7 +250,7 @@ resource "aws_security_group_rule" "inbound-ialb-https"{
 }
 
 resource "aws_security_group_rule" "inbound-ialb-http"{
-    description        = "Allow  traffic from nginx security group"
+    description        = "Allow Http traffic from nginx security group"
     type               = "ingress"
     from_port          = 80
     to_port            = 80
@@ -274,7 +286,7 @@ resource "aws_security_group_rule" "inbound-web-http-intAlb" {
     from_port          = 80
     to_port            = 80
     protocol           = "tcp"
-    source_security_group_id = aws_security_group.int-alb-sg.id # Allow Http traffic from Bastion security group 
+    source_security_group_id = aws_security_group.int-alb-sg.id # Allow Http traffic from Internal Alb security group 
     security_group_id  = aws_security_group.webserver-sg.id
 }
 
@@ -284,7 +296,7 @@ resource "aws_security_group_rule" "inbound-web-ssh" {
     from_port          = 22
     to_port            = 22
     protocol           = "tcp"
-    source_security_group_id = aws_security_group.bastion-sg.id # Allow traffic from Bastion Host security group
+    source_security_group_id = aws_security_group.bastion-sg.id # Allow ssh traffic from Bastion Host security group
     security_group_id  = aws_security_group.webserver-sg.id
 }
 
@@ -295,7 +307,7 @@ resource "aws_security_group_rule" "inbound-nfs-port" {
     from_port            = 2049
     to_port              = 2049
     protocol             = "tcp"
-    source_security_group_id = aws_security_group.webserver-sg.id # Allow traffic from webserver security group 
+    source_security_group_id = aws_security_group.webserver-sg.id # Allow nfs traffic from webserver security group 
     security_group_id    = aws_security_group.datalayer-sg.id
 }
 
