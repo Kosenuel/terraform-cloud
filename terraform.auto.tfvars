@@ -12,7 +12,7 @@ tags = {
 }
 domain_name   = "kosenuel.com"
 ami_id        = "ami-0aa938b5c246ef111" # CentOs Stream 9
-ami-web       = "ami-03338df094598a0c4" # Custom RHEL 9 Produced using Packer for tooling and bastion
+ami-web       = "ami-038ace02b111f17c5" # Custom CentOs 9 Produced using Packer for tooling and bastion
 ami-bastion   = "ami-08b86da95d74784df" # Custom RHEL 9 Produced using Packer for bastion
 ami-nginx     = "ami-00931ff169608b20d" # Custom RHEL 9 Produced using Packer for nginx
 ami-sonar     = "ami-0f9535ac605dc21d5" # RHEL 9 
