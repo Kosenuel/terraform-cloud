@@ -24,6 +24,12 @@ resource "aws_efs_mount_target" "private-2" {
     security_groups = [var.datalayer-sg_id]
 }
 
+resource "aws_efs_mount_target" "private-3" {
+    file_system_id  = aws_efs_file_system.project-efs.id
+    subnet_id       = var.private_subnets[2].id
+    security_groups = [var.datalayer-sg_id]
+}
+
 # Create Access Point - wordpress
 resource "aws_efs_access_point" "wordpress" {
     file_system_id  = aws_efs_file_system.project-efs.id
