@@ -68,8 +68,8 @@ resource "aws_autoscaling_group" "nginx-asg" {
     health_check_type   = "ELB"
     vpc_zone_identifier = [
         var.private_subnets[1].id, 
-        var.private_subnets[2].id,
-        # var.private_subnets[3].id,
+        # var.private_subnets[2].id,
+        var.private_subnets[3].id,
         var.private_subnets[0].id
         ]
     target_group_arns   = [var.nginx-tgt_arn]
