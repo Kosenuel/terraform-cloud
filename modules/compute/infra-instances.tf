@@ -53,7 +53,7 @@
 # Create an EC2 instance for the Bastion Host
 resource "aws_instance" "bastion-host" {
     ami                 = var.ami-bastion
-    instance_type       = "t3.small"
+    instance_type       = "t3.medium"
     subnet_id           = var.public_subnets[0].id
     security_groups     = [var.bastion-sg_id]
 
