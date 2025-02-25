@@ -35,7 +35,7 @@ resource "aws_autoscaling_group" "wordpress-asg" {
     max_size            = 2
     min_size            = 1
     desired_capacity    = 1
-    health_check_grace_period = 18000
+    health_check_grace_period = 915
     health_check_type   = "ELB"
     vpc_zone_identifier = [
         var.private_subnets[1].id, 
@@ -64,7 +64,7 @@ resource "aws_autoscaling_group" "nginx-asg" {
     max_size            = 2
     min_size            = 1
     desired_capacity    = 1
-    health_check_grace_period = 18000 #formerly 300
+    health_check_grace_period = 700
     health_check_type   = "ELB"
     vpc_zone_identifier = [
         var.private_subnets[1].id, 
@@ -93,7 +93,7 @@ resource "aws_autoscaling_group" "tooling-asg" {
     max_size            = 2
     min_size            = 1
     desired_capacity    = 1
-    health_check_grace_period = 18000 #formerly 915
+    health_check_grace_period = 915
     health_check_type   = "ELB"
     vpc_zone_identifier = [
         var.private_subnets[1].id, 
@@ -122,7 +122,7 @@ resource "aws_autoscaling_policy" "wordpress-scale-up" {
     name                    = "wordpress-scale-up"
     scaling_adjustment      = 1
     adjustment_type         = "ChangeInCapacity"
-    cooldown                = 18000 #formerly 915
+    cooldown                = 915
     autoscaling_group_name  = aws_autoscaling_group.wordpress-asg.name
 }
 
